@@ -6,6 +6,9 @@ import os
 import csv
 from sqlalchemy import create_engine,text
 from datetime import datetime
+import re
+from dateutil.parser import parse,ParserError
+
 # Add parent directory to path
 sys.path.append(os.path.abspath(os.path.join(os.getcwd(), '..')))
 from src.db_connection import DatabaseConnection
@@ -40,12 +43,15 @@ def normalize_dataframe_columns_to_lowercase(row_data: pd.DataFrame) -> pd.DataF
     """
         Turn the columns name of the dataset to lowercase to avoid any mismatch with the database columns name
     """
+    if row_data.shape[1] == 0:
+        raise pd.errors.EmptyDataError("Dataframe is empty.")
+    
     to_process = row_data.copy()
-    to_process.columns = to_process.columns.str.lower()
+    to_process.columns = to_process.columns.str.strip().str.lower()
     return to_process
 
 
-def process_row_data(row_data: pd.DataFrame , file_date)-> pd.DataFrame:   
+def process_row_data(row_data: pd.DataFrame , file_date:str)-> pd.DataFrame:   
     """
         Process the row data that read from the source and add ingested_at date for incremental load and processing
         to avoid full scan / processing.
@@ -77,7 +83,27 @@ def get_date_from_file_name(file_name:str) -> str:
         Return the date of the file by processing the filename and extract the date from the filename.
         in date format of day-month-year
     """
-    return file_name.split('.')[0]
+
+    content = file_name.split('.')
+
+    if len(content) != 2:
+        raise ValueError("The file name not as expected DD-MM-YYYY")
+
+
+    
+    file_date = parse(content[0]).strftime("%d-%m-%Y")
+    
+    
+    
+    file_name = file_date + '.' + content[1]
+
+
+    pattern = r"^\d{2}-\d{2}-\d{4}\.csv$"
+
+    if not re.match(pattern , file_name):
+        raise ValueError("The file name format not as expected.")
+
+    return file_date
     
 
 
