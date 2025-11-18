@@ -1,4 +1,4 @@
-# %%
+
 import pandas as pd
 from io import StringIO
 import sys
@@ -42,6 +42,9 @@ def drop_columns(df: pd.DataFrame , columns_list: list) -> pd.DataFrame:
     """
         Drop list of columns from the dataframe and raise an error if can't drop the columns.
     """
+    if df.columns.empty:
+        raise ValueError("The dataframe has no columns to delete.")
+
     try:
         return  df.drop(columns=columns_list)
         
@@ -56,8 +59,8 @@ def drop_null_values(df: pd.DataFrame , columns_list: list) -> pd.DataFrame:
     """
     try:
         return df.dropna(subset=columns_list)
-    except Exception as e:
-        raise type(e)(f"Can't drop the rows the columns not exists , {e}")
+    except KeyError as e:
+        raise KeyError(f"Can't drop the rows the columns not exists , {e}")
 
 
 def drop_negative_values(df:pd.DataFrame , columns_list : list) -> pd.DataFrame:
@@ -99,7 +102,7 @@ def standardize_null_values(df: pd.DataFrame, columns_list: list) -> pd.DataFram
     null_representations = ['None', 'Unknown', '', ' ', 'N/A', 'null']
     
     for column in columns_list:
-        df_clean[column] = df_clean[column].replace(null_representations, pd.NA)
+        df_clean[column] = df_clean[column].replace(null_representations,'None')
     
     return df_clean
 
@@ -154,4 +157,3 @@ def run_transformation()-> dict:
     }
 
 
-run_transformation()
