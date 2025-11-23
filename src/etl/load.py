@@ -105,14 +105,17 @@ def fill_region_dim(cleansed_data:pd.DataFrame , db_connection:DatabaseConnectio
 
 
 
-def load_all_dimension(dims_tables: list , db_connection:DatabaseConnection):
+def load_all_dimension(dims_tables: list , db_connection:DatabaseConnection) ->list:
     """
         Load all dimensions into the gold schema.
     """
 
     try:
+        inserted = []
         for dim in dims_tables: 
-            db_connection.load_dataframe_into_db(dim["table"],'gold',dim["name"])
+            total_loaded = db_connection.load_dataframe_into_db(dim["table"],'gold',dim["name"])
+            inserted.append(total_loaded)
+        return inserted
     except pd.errors.DatabaseError as e:
         raise pd.errors.DatabaseError(f"Database error can't insert the dim table:{e}")    
 
@@ -141,18 +144,19 @@ def fill_fact_table(cleaned_data:pd.DataFrame ,date_dim:pd.DataFrame , db_connec
 
 
 
-def load_fact_table(fact_data: pd.DataFrame , db_connection:DatabaseConnection):
+def load_fact_table(fact_data: pd.DataFrame , db_connection:DatabaseConnection) -> int:
     """
         Load the fact table to the database.
     """
 
     try:
-        db_connection.load_dataframe_into_db(fact_data , 'gold' , 'fact')
+        total_inserted = db_connection.load_dataframe_into_db(fact_data , 'gold' , 'fact')
+        return total_inserted
     except pd.errors.DatabaseError as e:
         raise pd.errors.DatabaseError(f"Can't load the fact table:{e}")
 
 
-def run_load():
+def run_load()-> dict:
 
 
     """
@@ -167,17 +171,17 @@ def run_load():
 
 
         dimension_list = [{"table" : date_dim , "name" :"date_dim"} , {"table" : region_dim , "name" :"region_dim"}]
-        load_all_dimension(dimension_list , db_connection)
+        total_inserted = load_all_dimension(dimension_list , db_connection)
 
 
         fact_data = fill_fact_table(cleansed_data , date_dim , db_connection)
 
-        load_fact_table(fact_data , db_connection)
+        fact_count = load_fact_table(fact_data , db_connection)
 
         return {
 
-            "date_dim_records" : len(date_dim),
-            "region_dim_records":len(region_dim),
-            "fact_records":len(fact_data)
+            "date_dim_records" : total_inserted[0],
+            "region_dim_records":total_inserted[1],
+            "fact_records":fact_count
 
         }

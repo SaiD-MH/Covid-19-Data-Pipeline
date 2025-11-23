@@ -16,12 +16,18 @@ class DatabaseConnection:
 
 
     def __init__(self, host:Optional[str] = None, database:Optional[str] = None, user:Optional[str] = None, password:Optional[str] = None, port:Optional[str] = None):
-        self.host = host or os.getenv("DEV_DB_HOST")
-        self.database = database or os.getenv("DEV_DB_NAME")
-        self.user = user or os.getenv("DEV_DB_USER")
-        self.password = password or os.getenv("DEV_DB_PWD")
-        self.port = port or os.getenv("DEV_DB_PORT")
+        ENV = ""
+        if os.getenv('APP_ENV') == 'DEV':
+            ENV = 'DEV'
+        else:
+            ENV = 'TEST'
 
+        self.host = host or os.getenv(f"{ENV}_DB_HOST")
+        self.database = database or os.getenv(f"{ENV}_DB_NAME")
+        self.user = user or os.getenv(f"{ENV}_DB_USER")
+        self.password = password or os.getenv(f"{ENV}_DB_PWD")
+        self.port = port or os.getenv(f"{ENV}_DB_PORT")
+        
         self._validate_db_config()
         self._engine: Optional[Engine] = None
 

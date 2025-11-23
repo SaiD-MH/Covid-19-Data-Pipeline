@@ -16,6 +16,6 @@ CREATE TABLE IF NOT EXISTS bronze.covid (
     Active               INTEGER,
     Combined_Key         VARCHAR(500),    -- string
     Incident_Rate        DOUBLE PRECISION,
-    Case_Fatality_Ratio  DOUBLE PRECISION
+    Case_Fatality_Ratio  DOUBLE PRECISION,
     ingested_at          Date
 );

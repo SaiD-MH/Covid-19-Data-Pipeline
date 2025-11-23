@@ -106,14 +106,15 @@ def standardize_null_values(df: pd.DataFrame, columns_list: list) -> pd.DataFram
     
     return df_clean
 
-def load_cleansed_data_into_silver(cleansed_data: pd.DataFrame):
+def load_cleansed_data_into_silver(cleansed_data: pd.DataFrame)-> int:
     
     """
         Storing the transformed data into the database.
     """
     try:
         with DatabaseConnection() as db_connection:
-            db_connection.load_dataframe_into_db(cleansed_data,"silver","covid")
+           total_loaded = db_connection.load_dataframe_into_db(cleansed_data,"silver","covid")
+           return total_loaded
     except Exception as e:
         raise type(e)(f"Can't load the transformed data into the database: {e}")
 
@@ -148,11 +149,11 @@ def run_transformation()-> dict:
     transformed_data = standardize_null_values(transformed_data , columns_list)
 
 
-    load_cleansed_data_into_silver(transformed_data)
+    total_loaded = load_cleansed_data_into_silver(transformed_data)
 
     return {
         "loaded_data" :len(row_data),
-        "rows_transformed" : len(transformed_data),
+        "rows_transformed" : total_loaded,
         "status" :"success"
     }
 

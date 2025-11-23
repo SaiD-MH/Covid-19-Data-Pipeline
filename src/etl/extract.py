@@ -12,7 +12,7 @@ from dateutil.parser import parse,ParserError
 # Add parent directory to path
 sys.path.append(os.path.abspath(os.path.join(os.getcwd(), '..')))
 from src.db_connection import DatabaseConnection
-PATH = "../data/"
+PATH = "/home/mohamed/Desktop/data-engineering-projects/Covid-19-Data-Pipeline/data/"
 
 
 
@@ -63,7 +63,7 @@ def process_row_data(row_data: pd.DataFrame , file_date:str)-> pd.DataFrame:
 
 
 
-def load_row_into_db(row_data: pd.DataFrame):
+def load_row_into_db(row_data: pd.DataFrame)-> int:
     """
         Load the read dataset from source as it as after add new column ( ingested_at ) for delta and incremental processing.
         Raise database exception incase of failure of storing the dataset.
@@ -72,7 +72,9 @@ def load_row_into_db(row_data: pd.DataFrame):
 
     try:
         with DatabaseConnection() as db_connection:
-            db_connection.load_dataframe_into_db(row_data ,"bronze" ,"covid")
+            total_inserted = db_connection.load_dataframe_into_db(row_data ,"bronze" ,"covid")
+        
+        return total_inserted
 
     except Exception as e:
         raise type(e)(f"An error happened during storing the dataset into the database {e}")
@@ -91,7 +93,7 @@ def get_date_from_file_name(file_name:str) -> str:
 
 
     
-    file_date = parse(content[0]).strftime("%d-%m-%Y")
+    file_date = content[0]
     
     
     
@@ -117,15 +119,15 @@ def run_extraction(file_name) ->dict:
     loaded_data = read_data(to_load_file_name)
     row_data = normalize_dataframe_columns_to_lowercase(loaded_data)
     row_data = process_row_data(row_data , to_load_file_name)
-    load_row_into_db(row_data)
+    total_inserted = load_row_into_db(row_data)
 
 
     # Extraction Information
 
     extraction_info = {
         "file_name" : file_name,
-        "loaded_data" :len(loaded_data),
         "rows_read" : len(row_data),
+        "loaded_data" : total_inserted,
         "status" :"success"
     }
 
