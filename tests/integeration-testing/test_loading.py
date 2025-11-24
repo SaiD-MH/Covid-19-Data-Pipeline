@@ -1,15 +1,18 @@
+import os
+import sys
 
 from dotenv import load_dotenv
-import os,sys
-sys.path.append(os.path.abspath(os.path.join(os.getcwd(), '../..')))
+
+sys.path.append(os.path.abspath(os.path.join(os.getcwd(), "../..")))
 load_dotenv()  # loads .env file
-from sqlalchemy import create_engine , text
 import pytest
+from sqlalchemy import create_engine, text
+
 from src.etl.load import run_load
+
 
 @pytest.fixture()
 def database_schema_setup():
-
     query = """
               
                 DROP SCHEMA IF EXISTS silver CASCADE;
@@ -107,40 +110,28 @@ def database_schema_setup():
 
                 
             """
-    
+
     engin = engine = create_engine("postgresql://covid:covid@localhost:8082/covid")
     with engin.connect() as connection:
-        
         connection.execute(text(query))
         connection.commit()
-    
+
     yield
 
 
-
 def test_loading_script(database_schema_setup):
-    
     """
-        Integration testing for the extract script using docker compose 
+    Integration testing for the extract script using docker compose
     """
     # Given a row data in csv format with name 25-03-2025
 
-    os.environ['APP_ENV'] = 'TEST'
+    os.environ["APP_ENV"] = "TEST"
 
     # When run extraction script
     results = run_load()
 
-    #Then 
-    expected = {
-        "date_dim_records" :1,
-        "region_dim_records" : 2,
-        "fact_records" :2
-    }
-    
-    #os.environ['APP_ENV'] = 'DEV'
+    # Then
+    expected = {"date_dim_records": 1, "region_dim_records": 2, "fact_records": 2}
+
+    # os.environ['APP_ENV'] = 'DEV'
     assert results == expected
-
-
-
-
-

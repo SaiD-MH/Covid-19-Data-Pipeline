@@ -1,15 +1,18 @@
+import os
+import sys
 
 from dotenv import load_dotenv
-import os,sys
-sys.path.append(os.path.abspath(os.path.join(os.getcwd(), '../..')))
+
+sys.path.append(os.path.abspath(os.path.join(os.getcwd(), "../..")))
 load_dotenv()  # loads .env file
-from sqlalchemy import create_engine , text
 import pytest
+from sqlalchemy import create_engine, text
+
 from src.etl.extract import run_extraction
+
 
 @pytest.fixture()
 def database_schema_setup():
-
     query = """
                 DROP SCHEMA IF EXISTS BRONZE CASCADE;
 
@@ -35,7 +38,7 @@ def database_schema_setup():
                 );
                 
             """
-    
+
     engin = engine = create_engine("postgresql://covid:covid@localhost:8082/covid")
     with engin.connect() as connection:
         connection.execute(text(query))
@@ -43,31 +46,24 @@ def database_schema_setup():
         connection.close()
 
 
-
 def test_extraction_script(database_schema_setup):
-    
     """
-        Integration testing for the extract script using docker compose 
+    Integration testing for the extract script using docker compose
     """
     # Given a row data in csv format with name 25-03-2025
 
-    os.environ['APP_ENV'] = 'TEST'
+    os.environ["APP_ENV"] = "TEST"
 
     # When run extraction script
     results = run_extraction("03-25-2025.csv")
 
-    #Then 
+    # Then
     expected = {
-        "file_name" : "03-25-2025.csv",
-        "rows_read" : 2,
-        "loaded_data" :2,
-        "status" :"success"
+        "file_name": "03-25-2025.csv",
+        "rows_read": 2,
+        "loaded_data": 2,
+        "status": "success",
     }
-    
-    #os.environ['APP_ENV'] = 'DEV'
+
+    # os.environ['APP_ENV'] = 'DEV'
     assert results == expected
-
-
-
-
-
