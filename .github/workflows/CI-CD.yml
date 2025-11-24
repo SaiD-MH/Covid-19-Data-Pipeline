@@ -27,6 +27,14 @@ jobs:
 
   run-integration-testing:
     runs-on: ubuntu-latest
+    env:
+      DB_HOST: "localhost"
+      DB_USER: "postgres"
+      DB_PASSWORD: "postgres"
+      DB_DATABASE: "postgres"
+      DB_PORT: "5432"
+
+      
     steps:
       - name: repo-checkout
         uses: actions/checkout@v5.0.0
