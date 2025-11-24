@@ -9,10 +9,16 @@ from datetime import datetime
 import re
 from dateutil.parser import parse,ParserError
 
-# Add parent directory to path
-sys.path.append(os.path.abspath(os.path.join(os.getcwd(), '..')))
+# Location of this file: project_root/src/etl/extract.py
+CURRENT_DIR = os.path.dirname(__file__)                  # src/etl
+SRC_DIR = os.path.abspath(os.path.join(CURRENT_DIR, ".."))  # src
+PROJECT_ROOT = os.path.abspath(os.path.join(SRC_DIR, ".."))  # project root
+
+DATA_DIR = os.path.join(PROJECT_ROOT, "data")
 from src.db_connection import DatabaseConnection
-PATH = "/home/mohamed/Desktop/data-engineering-projects/Covid-19-Data-Pipeline/data/"
+
+
+PATH = "../data/"
 
 
 
@@ -21,7 +27,9 @@ def read_data(file_name)-> pd.DataFrame:
     """
         Read CSV file and drop exception incase if reading the file failed
     """
-    full_path = PATH + file_name + '.csv'
+    
+    full_path = os.path.join(DATA_DIR, f"{file_name}.csv")
+
     try:
         row_data = pd.read_csv(full_path , quotechar='"' , low_memory=False)
         
