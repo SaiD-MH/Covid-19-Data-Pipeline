@@ -1,6 +1,6 @@
 #project 
 
-/data
+/data/*-2021.csv
 tasks.txt
 
 # Byte-compiled / optimized / DLL files
