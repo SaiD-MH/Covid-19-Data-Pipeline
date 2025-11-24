@@ -29,10 +29,10 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DB_HOST: "localhost"
-      DB_USER: "postgres"
-      DB_PASSWORD: "postgres"
-      DB_DATABASE: "postgres"
-      DB_PORT: "5432"
+      DB_USER: "covid"
+      DB_PASSWORD: "covid"
+      DB_DATABASE: "covid"
+      DB_PORT: "8082"
 
       
     steps:
