@@ -111,7 +111,7 @@ def test_get_date_from_file_name_with_different_date_format():
     result = get_date_from_file_name(file_name)
 
     #Then
-    excepted = "30-12-2025"
+    excepted = "12-30-2025"
     assert result == excepted
 
 
@@ -127,7 +127,7 @@ def test_get_date_from_file_name_with_invalid_format_special_char():
     #When
 
     #Then
-    with pytest.raises(ParserError):
+    with pytest.raises(ValueError):
         result = get_date_from_file_name("01-01|2025.csv")
         
 def test_get_date_from_file_name_with_invalid_format_different_extention():

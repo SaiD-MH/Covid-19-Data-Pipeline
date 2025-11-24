@@ -1,0 +1,45 @@
+on:
+  push:
+    brances:
+      - main
+   
+
+
+jobs:
+  run-unit-testing:
+    runs-on: ubuntu-latest
+    steps:
+      - name: repo-checkout
+        uses: actions/checkout@v5.0.0
+      
+      - name: set-up python 
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      
+      - name: install environment requirments
+        run: pip install -r requirements.txt
+      
+      - name: run unit tests
+        run: |
+          cd tests/unit-tests
+          pytest
+
+  run-integration-testing:
+    runs-on: ubuntu-latest
+    steps:
+      - name: repo-checkout
+        uses: actions/checkout@v5.0.0
+      
+      - name: set-up python 
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      
+      - name: install environment requirments
+        run: pip install -r requirements.txt
+      
+      - name: run integration tests
+        run: |
+          cd test/integeration-testing
+          pytest
