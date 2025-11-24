@@ -45,5 +45,6 @@ jobs:
           cd ../..
       - name: run integration tests
         run: |
+          pwd
           cd test/integeration-testing
           pytest
