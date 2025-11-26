@@ -13,8 +13,11 @@ services:
       - "8081:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
-
-
-
+    networks:
+      - shared-network
 volumes:
   pgdata:
+
+networks:
+  shared-network:
+    external: true
