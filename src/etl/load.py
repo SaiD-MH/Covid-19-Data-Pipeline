@@ -75,7 +75,7 @@ def fill_date_dim_table(
         "day_of_week": ingested_date.weekday() + 1,  # Monday=1, Sunday=7
         "day_of_month": ingested_date.day,
         "day_name": ingested_date.strftime("%A"),
-        "week_of_year": iso_cal.week,
+        "week_of_year": iso_cal[1],
         "month": ingested_date.month,
         "month_name": ingested_date.strftime("%B"),
         "quarter": (ingested_date.month - 1) // 3 + 1,

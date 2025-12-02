@@ -59,12 +59,18 @@ x-airflow-common:
     AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
     AIRFLOW__API__ENABLE_TEST_CONNECTION: 'true'
     AIRFLOW__WEBSERVER__EXPOSE_CONFIG: 'true'  # ADD THIS LINE
+    PYTHONPATH: '/opt/airflow'  # ← Add this
     AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth'
-    _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
+    _PIP_ADDITIONAL_REQUIREMENTS: "python-dotenv psycopg2-binary pandas sqlalchemy"
+
+
   volumes:
     - ../../dags:/opt/airflow/dags
     - ../../logs:/opt/airflow/logs
     - ../../plugins:/opt/airflow/plugins
+    - ../../data:/opt/airflow/data
+    - ../../src:/opt/airflow/src
+    - ../../.env:/opt/airflow/.env
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
     &airflow-common-depends-on
@@ -120,6 +126,7 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
+
 
   airflow-scheduler:
     <<: *airflow-common

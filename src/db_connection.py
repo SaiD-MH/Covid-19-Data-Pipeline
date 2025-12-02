@@ -1,5 +1,8 @@
 # src/db_connection.py
-from sqlalchemy import create_engine, Engine, text
+#from sqlalchemy import create_engine, Engine, text
+from sqlalchemy import create_engine, text
+from sqlalchemy.engine import Engine
+
 import pandas as pd
 from dotenv import load_dotenv
 import os
