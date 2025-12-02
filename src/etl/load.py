@@ -133,8 +133,8 @@ def load_all_dimension(dims_tables: list, db_connection: DatabaseConnection) -> 
             )
             inserted.append(total_loaded)
         return inserted
-    except pd.errors.DatabaseError as e:
-        raise pd.errors.DatabaseError(f"Database error can't insert the dim table:{e}")
+    except Exception as e:
+        raise type(e)(f"Database error can't insert the dim table:{e}")
 
 
 def fill_fact_table(

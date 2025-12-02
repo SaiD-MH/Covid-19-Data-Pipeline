@@ -9,8 +9,10 @@ from src.etl.transform import run_transformation
 from src.etl.load import run_load
 
 
-def run_extraction_job():
-    run_extraction('03-25-2025.csv')
+def run_extraction_job(ds,**context):
+    execution_date = context['execution_date']
+    execution_date = execution_date.strftime("%m-%d-%Y")
+    run_extraction(f'{execution_date}.csv')
 
 def run_transformation_job():
     run_transformation()
@@ -20,20 +22,22 @@ def run_loading_job():
 
 
 
-with DAG(dag_id = "covid_dag" , description="Dag for orchestration ETL of covid data pipeline" ,start_date=datetime(2025,11,26),schedule_interval="@once", tags=["Covid-19" ],
+with DAG(dag_id = "covid_dag" , description="Dag for orchestration ETL of covid data pipeline" ,start_date=datetime(2025,11,26),schedule_interval="@daily", tags=["Covid-19" ],
          catchup=False)  as dag:
     
     
     dataset_waiting = FileSensor(task_id = 'dataset_waiting' , 
                                 fs_conn_id = 'file_system_connection',
-                                filepath = 'data/03-25-2025.csv',
+                                filepath = 'data/{{ macros.ds_format(ds, "%Y-%m-%d", "%m-%d-%Y") }}.csv',
                                 poke_interval=5,
                                 timeout=20,
                                 mode = 'poke'
                                 )
     
     extraction_task = PythonOperator(task_id = 'extraction_task',
-                                    python_callable=run_extraction_job)
+                                    python_callable=run_extraction_job,
+                                    provide_context=True)
+    
     
     transformation_task = PythonOperator(task_id = 'transformation_task',
                                     python_callable=run_transformation_job)
