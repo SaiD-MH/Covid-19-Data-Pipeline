@@ -49,7 +49,7 @@ A concise summary of the overall architecture:
 - **Storage**: PostgreSQL with Bronze (raw), Silver (cleansed), Gold (analytics)
 
 ### Architecture Diagram
-![System Architecture](https://raw.githubusercontent.com/SaiD-MH/Covid-19-Data-Pipeline/main/System%20Architecture.jpg)
+![System Architecture](https://github.com/SaiD-MH/Covid-19-Data-Pipeline/blob/main/ETL%20Pipeline.jpg)
 
 
 ### Architecture Components
